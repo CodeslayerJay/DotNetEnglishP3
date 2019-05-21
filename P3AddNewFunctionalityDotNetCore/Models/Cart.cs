@@ -29,14 +29,62 @@ namespace P3AddNewFunctionalityDotNetCore.Models
 
         public void RemoveLine(Product product) => _cartLines.RemoveAll(l => l.Product.Id == product.Id);
 
+        // These do not count for if a line has a product with more
+        // than 1 quantity to purchase
+        // 
+        //public double GetTotalValue()
+        //{
+        //    return _cartLines.Any() ? _cartLines.Sum(l => l.Product.Price) : 0;
+        //}
+
+        //public double GetAverageValue()
+        //{
+        //    return _cartLines.Any() ? _cartLines.Average(l => l.Product.Price) : 0;
+        //}
+
         public double GetTotalValue()
         {
-            return _cartLines.Any() ? _cartLines.Sum(l => l.Product.Price) : 0;
+            double totalCartValue = 0.0;
+            if (_cartLines.Any())
+            {
+
+                // Loop through each item in collection
+                foreach (var item in _cartLines)
+                {
+                    // Multiply quantity by price then add to totalCartValue
+                    totalCartValue = (item.Quantity * item.Product.Price) + totalCartValue;
+                }
+
+                //return totalCartValue;
+            }
+
+            // Return total value
+            return totalCartValue;
         }
 
         public double GetAverageValue()
         {
-            return _cartLines.Any() ? _cartLines.Average(l => l.Product.Price) : 0;
+            double totalCartValue = 0.0;
+            if (_cartLines.Any())
+            {
+                int totalCartQuantity = 0;
+
+                // Loop through each item in collection
+                foreach (var item in _cartLines)
+                {
+                    // Add product quantity to total cart quantity
+                    totalCartQuantity = totalCartQuantity + item.Quantity;
+
+                    // Multiply quantity by price then add to totalCartValue
+                    totalCartValue = (item.Quantity * item.Product.Price) + totalCartValue;
+                }
+
+                // Return average
+                return totalCartValue / totalCartQuantity;
+
+            }
+
+            return totalCartValue;
         }
 
         public void Clear() => _cartLines.Clear();
