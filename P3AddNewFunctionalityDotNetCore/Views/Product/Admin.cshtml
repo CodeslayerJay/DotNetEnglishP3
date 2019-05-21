@@ -38,12 +38,9 @@
                 <td style="text-align:center">@p.Stock</td>
                 <td>@p.Details</td>
                 <td>
-                    <form id="@p.Id" asp-action="DeleteProduct" asp-controller="Product" method="post">
-                        <input type="hidden" name="id" value="@p.Id" />
-                        <button type="submit" class="btn btn-danger">
-                            @Localizer["Delete"]
-                        </button>
-                    </form>
+                    <a asp-controller="Product" asp-action="ConfirmDelete" asp-route-id="@p.Id" class="btn btn-danger">
+                        @Localizer["Delete"]
+                    </a>
                 </td>
             </tr>
             }

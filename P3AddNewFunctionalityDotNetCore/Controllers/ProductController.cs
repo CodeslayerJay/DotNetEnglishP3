@@ -70,5 +70,19 @@ namespace P3AddNewFunctionalityDotNetCore.Controllers
             _productService.DeleteProduct(id);
             return RedirectToAction("Admin");
         }
+
+        // Display a page to confirm deletion of product
+        [Authorize]
+        public IActionResult ConfirmDelete(int id)
+        {
+            var product = _productService.GetProductByIdViewModel(id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
+        }
     }
 }

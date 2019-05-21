@@ -1,0 +1,18 @@
+﻿@model P3AddNewFunctionalityDotNetCore.Models.ViewModels.ProductViewModel
+@{
+    ViewData["Title"] = "Confirm Deletion";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<br/>
+<h1>@Localizer["Delete"]?</h1>
+<hr/>
+<h3>@Model.Name</h3>
+<br />
+<form id="@Model.Id" asp-action="DeleteProduct" asp-controller="Product" method="post">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <button type="submit" class="btn btn-danger">
+        @Localizer["Delete"]
+    </button>
+    <a asp-controller="Product" asp-action="Admin" class="btn">@Localizer["Cancel"]</a>
+</form>
