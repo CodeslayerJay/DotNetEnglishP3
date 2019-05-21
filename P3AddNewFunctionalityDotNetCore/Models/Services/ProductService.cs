@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using P3AddNewFunctionalityDotNetCore.Models.Entities;
 using P3AddNewFunctionalityDotNetCore.Models.Repositories;
+using P3AddNewFunctionalityDotNetCore.Models.Validators;
 using P3AddNewFunctionalityDotNetCore.Models.ViewModels;
 
 namespace P3AddNewFunctionalityDotNetCore.Models.Services
@@ -91,42 +92,61 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
         }
 
         // TODO this is an example method, remove it for 
+        //public List<string> CheckProductModelErrors(ProductViewModel product)
+        //{
+        //    List<string> modelErrors = new List<string>();
+        //    if (product.Name == null || string.IsNullOrWhiteSpace(product.Name))
+        //    {
+        //        modelErrors.Add(_localizer["MissingName"]);
+        //    }
+
+        //    if (product.Price == null || string.IsNullOrWhiteSpace(product.Price))
+        //    {
+        //        modelErrors.Add(_localizer["MissingPrice"]);
+        //    }
+
+        //    if (!Double.TryParse(product.Price, out double pc))
+        //    {
+        //        modelErrors.Add(_localizer["PriceNotANumber"]);
+        //    }
+        //    else
+        //    {
+        //        if (pc <= 0)
+        //            modelErrors.Add(_localizer["PriceNotGreaterThanZero"]);
+        //    }
+
+        //    if (product.Stock == null || string.IsNullOrWhiteSpace(product.Stock))
+        //    {
+        //        modelErrors.Add(_localizer["MissingQuantity"]);
+        //    }
+
+        //    if (!int.TryParse(product.Stock, out int qt))
+        //    {
+        //        modelErrors.Add(_localizer["StockNotAnInteger"]);
+        //    }
+        //    else
+        //    {
+        //        if (qt <= 0)
+        //            modelErrors.Add(_localizer["StockNotGreaterThanZero"]);
+        //    }
+
+        //    return modelErrors;
+        //}
+
+        // Check for validation errors
         public List<string> CheckProductModelErrors(ProductViewModel product)
         {
             List<string> modelErrors = new List<string>();
-            if (product.Name == null || string.IsNullOrWhiteSpace(product.Name))
-            {
-                modelErrors.Add(_localizer["MissingName"]);
-            }
+            var validator = new ProductValidator(_localizer);
+            var results = validator.Validate(product);
 
-            if (product.Price == null || string.IsNullOrWhiteSpace(product.Price))
+            //var success = results.IsValid;
+            if (results.Errors.Any())
             {
-                modelErrors.Add(_localizer["MissingPrice"]);
-            }
-
-            if (!Double.TryParse(product.Price, out double pc))
-            {
-                modelErrors.Add(_localizer["PriceNotANumber"]);
-            }
-            else
-            {
-                if (pc <= 0)
-                    modelErrors.Add(_localizer["PriceNotGreaterThanZero"]);
-            }
-
-            if (product.Stock == null || string.IsNullOrWhiteSpace(product.Stock))
-            {
-                modelErrors.Add(_localizer["MissingQuantity"]);
-            }
-
-            if (!int.TryParse(product.Stock, out int qt))
-            {
-                modelErrors.Add(_localizer["StockNotAnInteger"]);
-            }
-            else
-            {
-                if (qt <= 0)
-                    modelErrors.Add(_localizer["StockNotGreaterThanZero"]);
+                foreach (var error in results.Errors)
+                {
+                    modelErrors.Add(error.ErrorMessage);
+                }
             }
 
             return modelErrors;
