@@ -41,6 +41,27 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             Assert.Equal("/Account/Login", response.RequestMessage.RequestUri.AbsolutePath);
         }
 
+        [Fact]
+        public async Task Get_CanLogoutAsAdmin_RedirectsToDefaultHomePage()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var url = "/Account/Logout";
+
+            // Act
+            // Ensure we are logged in first
+            // Login as administrator
+            var loginDetails = new Dictionary<string, string> { { "Name", "Admin" }, { "Password", "P@ssword123" } };
+            var loginAsAdmin = await ClientHelpers.PostAntiForgeryAsync(client, "/Account/Login", loginDetails);
+            loginAsAdmin.EnsureSuccessStatusCode();
+
+            var response = await client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            // Assert
+            Assert.Equal("/", response.RequestMessage.RequestUri.AbsolutePath);
+        }
+
         // Cannot access protected routes when not logged in as administrator
         [Theory]
         [InlineData("/Product/Admin")]
