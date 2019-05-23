@@ -30,7 +30,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
 
         // Test can get login page
         [Fact]
-        public async Task CanGetLoginPage()
+        public async Task Get_CanGetLoginPage()
         {
             var client = _factory.CreateClient();
             var url = "/Account/Login";
@@ -46,20 +46,69 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
         [InlineData("/Product/Admin")]
         [InlineData("/Product/Create")]
         [InlineData("/Product/ConfirmDelete?id=1")]
-        public async Task CannotAccessProtectedResource_RedirectsToAccountLogin(string url)
+        public async Task Get_CannotAccessProtectedResource_RedirectsToAccountLogin(string url)
         {
             var client = _factory.CreateClient();
             
             var response = await client.GetAsync(url);
 
             response.EnsureSuccessStatusCode();
-            Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
             Assert.Equal("/Account/Login", response.RequestMessage.RequestUri.AbsolutePath);
+        }
+
+        // Can get delete confirm page when logged in as administrator
+        [Fact]
+        public async Task Get_CanGetDeleteConfirmPage()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var url = "/Product/ConfirmDelete?id=1";
+
+            // Login as administrator
+            var loginDetails = new Dictionary<string, string> { { "Name", "Admin" }, { "Password", "P@ssword123" } };
+            var loginAsAdmin = await ClientHelpers.PostAntiForgeryAsync(client, "/Account/Login", loginDetails);
+            loginAsAdmin.EnsureSuccessStatusCode();
+
+            // Act
+            var response = await client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            // Assert correct route
+            Assert.Equal("/Product/ConfirmDelete", response.RequestMessage.RequestUri.AbsolutePath);
+            
+            // Assert product is available on page
+            var responseString = response.Content.ReadAsStringAsync();
+            Assert.Contains("<input type=\"hidden\" name=\"id\" value=\"1\" />", responseString.Result);
+        }
+
+        // Can login successfully
+        [Fact]
+        public async Task Post_CanLoginSuccessfully_RedirectsToAdmin()
+        {
+            // Arrange 
+            var client = _factory.CreateClient();
+            var url = "/Account/Login";
+
+            var formData = new Dictionary<string, string>
+            {
+                { "Name", "Admin" },
+                { "Password", "P@ssword123" },
+                { "ReturnUrl", "/Product/Admin" }
+            };
+
+            // Act
+            var response = await ClientHelpers.PostAntiForgeryAsync(client, url, formData);
+            response.EnsureSuccessStatusCode();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("/Product/Admin", response.RequestMessage.RequestUri.AbsolutePath);
+
         }
 
         // Test product creation (post)
         [Fact]
-        public async Task CreateProductSuccessfully_RedirectsToAdminPage()
+        public async Task Post_CreatesProductSuccessfully_RedirectsToAdminPage()
         {
             // Arrange 
             var client = _factory.CreateClient();
@@ -88,31 +137,37 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             Assert.Equal("/Product/Admin", response.RequestMessage.RequestUri.AbsolutePath);
         }
 
-        // Can login successfully
+        // Test product deletion (post)
         [Fact]
-        public async Task CanLoginSuccessfully_RedirectsToAdmin()
+        public async Task Post_DeleteProductSuccessfully_RedirectsToAdminPage()
         {
             // Arrange 
             var client = _factory.CreateClient();
-            var url = "/Account/Login";
-
+            var url = "/Product/Create";
+            var loginDetails = new Dictionary<string, string> { { "Name", "Admin" }, { "Password", "P@ssword123" } };
             var formData = new Dictionary<string, string>
             {
-                { "Name", "Admin" },
-                { "Password", "P@ssword123" },
-                { "ReturnUrl", "/Product/Admin" }
+                { "Name", "Integration Test Product" },
+                { "Stock", "5" },
+                { "Price", "5.00" },
+                { "Description", "Integration test product" },
+                { "Details", "" }
             };
 
             // Act
-            var response = await ClientHelpers.PostAntiForgeryAsync(client, url, formData);
+            // Login as administrator
+            var loginResponse = await ClientHelpers.PostAntiForgeryAsync(client, "/Account/Login", loginDetails);
+            loginResponse.EnsureSuccessStatusCode();
 
-            //var response = await client.PostAsync(url, new FormUrlEncodedContent(formData));
+            // Make a post request
+            var response = await ClientHelpers.PostAntiForgeryAsync(client, url, formData);
             response.EnsureSuccessStatusCode();
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("/Product/Admin", response.RequestMessage.RequestUri.AbsolutePath);
-            
         }
+
+
     }
 }
