@@ -158,6 +158,44 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             Assert.Equal("/Product/Admin", response.RequestMessage.RequestUri.AbsolutePath);
         }
 
+        // Product creation fails with validation errors
+        [Fact]
+        public async Task Post_CreatesProductFailsWithValidationErrors()
+        {
+            // Arrange 
+            var client = _factory.CreateClient();
+            var url = "/Product/Create";
+            var loginDetails = new Dictionary<string, string> { { "Name", "Admin" }, { "Password", "P@ssword123" } };
+            var formData = new Dictionary<string, string>
+            {
+                { "Name", "" },
+                { "Stock", "" },
+                { "Price", "" },
+                { "Description", "Integration test product" },
+                { "Details", "" }
+            };
+
+            // Act
+            // Login as administrator
+            var loginResponse = await ClientHelpers.PostAntiForgeryAsync(client, "/Account/Login", loginDetails);
+            loginResponse.EnsureSuccessStatusCode();
+
+            // Make a post request
+            var response = await ClientHelpers.PostAntiForgeryAsync(client, url, formData);
+            response.EnsureSuccessStatusCode();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            //Assert.Equal("/Product/Admin", response.RequestMessage.RequestUri.AbsolutePath);
+
+            // Assert validation errors exist on page
+            var responseString = response.Content.ReadAsStringAsync();
+            Assert.Contains("<div class=\"text-danger validation-summary-errors\" data-valmsg-summary=\"true\">", responseString.Result);
+            //Assert.Contains("<li>Please enter a name</li>", responseString.Result);
+            //Assert.Contains("<li>Please enter a price</li>", responseString.Result);
+            //Assert.Contains("<li>Please enter a stock value</li>", responseString.Result);
+        }
+
         // Test product deletion (post)
         [Fact]
         public async Task Post_DeleteProductSuccessfully_RedirectsToAdminPage()
