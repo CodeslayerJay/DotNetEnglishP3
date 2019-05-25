@@ -50,15 +50,12 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
                     // Seed our db with test data
                     try
                     {
-                        //var context = scopedServices.GetRequiredService<P3Referential>();
-                        //context.Database.Migrate();
-                        //var identityContext = scopedServices.GetRequiredService<AppIdentityDbContext>();
-                        //identityContext.Database.Migrate();
+                        
                         SeedData.Initialize(scopedServices);
                     }
                     catch (Exception ex)
                     {
-                        //var logger = scopedServices.GetRequiredService<ILogger<Program>>();
+                        
                         logger.LogError(ex, "An error occurred seeding the DB.");
                     }
                 }
