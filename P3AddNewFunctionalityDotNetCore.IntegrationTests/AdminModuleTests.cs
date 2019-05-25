@@ -81,7 +81,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
         public async Task Get_CanGetDeleteConfirmPageAsAdmin()
         {
             // Arrange
-            var url = "/Product/ConfirmDelete?id=1";
+            var url = "/Product/ConfirmDelete?id=2";
 
             // Act
             var response = await _client.GetAsAuthAsync(url);
@@ -92,7 +92,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             
             // Assert product is available on page
             var responseString = response.Content.ReadAsStringAsync();
-            Assert.Contains("<input type=\"hidden\" name=\"id\" value=\"1\" />", responseString.Result);
+            Assert.Contains("<input type=\"hidden\" name=\"id\" value=\"2\" />", responseString.Result);
         }
 
         // Verify the user can login as administrator with the default username/password
@@ -223,5 +223,8 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("/Product/Admin", response.RequestMessage.RequestUri.AbsolutePath);
         }
+
+        
+
     }
 }
