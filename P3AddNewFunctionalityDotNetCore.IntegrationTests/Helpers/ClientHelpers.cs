@@ -13,59 +13,33 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests.Helpers
     /// </summary>
     public static class ClientHelpers
     {
-        private static HttpClient _client;
-        
-        public static void Stage(HttpClient httpClient)
+        // User login details
+        private const string AdminUser = "Admin";
+        private const string AdminPassword = "P@ssword123";
+        private const string LoginRoute = "/Account/Login";
+
+        // Login with test credentials
+        public static async Task<HttpResponseMessage> LoginAsAdmin(this HttpClient httpClient)
         {
-            _client = httpClient;
+            // Login as administrator
+            var loginDetails = new Dictionary<string, string> { { "Name", AdminUser }, { "Password", AdminPassword } };
+
+            var response = await PostAntiForgeryAsync(httpClient, LoginRoute, loginDetails);
+            response.EnsureSuccessStatusCode();
+
+            return response;
         }
 
-        public static async Task<HttpResponseMessage> GetAsync(string requestUri)
-        {
-            return await _client.GetAsync(requestUri);
-        }
-
-        // Post with antiforgerytoken
+        /// <summary>
+        /// Make a post request with antiforgerytoken
+        /// </summary>
+        /// <param name="httpClient"></param>
+        /// <param name="requestUri"></param>
+        /// <param name="formData"></param>
+        /// <returns></returns>
         public static async Task<HttpResponseMessage> PostAntiForgeryAsync(this HttpClient httpClient, string requestUri, 
             IDictionary<string, string> formData)
         {
-            // Get the form view
-            HttpResponseMessage responseMsg = await _client.GetAsync(requestUri);
-            if (!responseMsg.IsSuccessStatusCode)
-            {
-                return responseMsg;
-            }
-
-            // Extract Anti Forgery Token
-            var antiForgeryToken = await ExtractAntiForgeryTokenAsync(responseMsg);
-
-            // Serialize data to Key/Value pairs
-            IDictionary<string, string> contentData = formData;
-
-            // Create the request message with previously serialized data + the Anti Forgery Token
-            contentData.Add("__RequestVerificationToken", antiForgeryToken);
-            var requestMsg = new HttpRequestMessage(HttpMethod.Post, requestUri)
-            {
-                Content = new FormUrlEncodedContent(contentData)
-            };
-
-            // Copy the cookies from the response (containing the Anti Forgery Token) to the request that is about to be sent
-            requestMsg = CookiesHelper.CopyCookiesFromResponse(requestMsg, responseMsg);
-
-            return await httpClient.SendAsync(requestMsg);
-        }
-
-        // Make a post logged in as administrator
-        public static async Task<HttpResponseMessage> PostWithAuthAsync(this HttpClient httpClient, string requestUri,
-            IDictionary<string, string> formData)
-        {
-
-            // Login as administrator
-            var loginDetails = new Dictionary<string, string> { { "Name", "Admin" }, { "Password", "P@ssword123" } };
-            
-            var loginResponse = await PostAntiForgeryAsync(httpClient, "/Account/Login", loginDetails);
-            loginResponse.EnsureSuccessStatusCode();
-
             // Get the form view
             HttpResponseMessage responseMsg = await httpClient.GetAsync(requestUri);
             if (!responseMsg.IsSuccessStatusCode)
@@ -87,40 +61,48 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests.Helpers
             };
 
             // Copy the cookies from the response (containing the Anti Forgery Token) to the request that is about to be sent
-            requestMsg = CookiesHelper.CopyCookiesFromResponse(requestMsg, responseMsg);
+            //requestMsg = CookiesHelper.CopyCookiesFromResponse(requestMsg, responseMsg);
 
             return await httpClient.SendAsync(requestMsg);
         }
 
-        public static async Task<HttpResponseMessage> PostWithAuthAsync(string requestUri, IDictionary<string, string> formData)
+        
+        /// <summary>
+        /// Make a post request as an authorized user
+        /// </summary>
+        /// <param name="httpClient"></param>
+        /// <param name="requestUri"></param>
+        /// <param name="formData"></param>
+        /// <returns></returns>
+        public static async Task<HttpResponseMessage> PostWithAuthAsync(this HttpClient httpClient, string requestUri,
+            IDictionary<string, string> formData)
         {
-            return await PostWithAuthAsync(_client, requestUri, formData);
+
+            await LoginAsAdmin(httpClient);
+
+            return await PostAntiForgeryAsync(httpClient, requestUri, formData);
         }
 
-        public static async Task<HttpResponseMessage> GetAsAuthAsync(string requestUri)
-        {
-            // Login as administrator
-            var loginDetails = new Dictionary<string, string> { { "Name", "Admin" }, { "Password", "P@ssword123" } };
 
-            var loginResponse = await PostAntiForgeryAsync(_client, "/Account/Login", loginDetails);
-            loginResponse.EnsureSuccessStatusCode();
-
-            return await _client.GetAsync(requestUri);
-        }
-
+        /// <summary>
+        /// Get request as an authorized user
+        /// </summary>
+        /// <param name="httpClient"></param>
+        /// <param name="requestUri"></param>
+        /// <returns></returns>
         public static async Task<HttpResponseMessage> GetAsAuthAsync(this HttpClient httpClient, string requestUri)
         {
-            // Login as administrator
-            var loginDetails = new Dictionary<string, string> { { "Name", "Admin" }, { "Password", "P@ssword123" } };
-
-            var loginResponse = await PostAntiForgeryAsync(httpClient, "/Account/Login", loginDetails);
-            loginResponse.EnsureSuccessStatusCode();
+            await LoginAsAdmin(httpClient);
 
             return await httpClient.GetAsync(requestUri);
         }
 
 
-        // Extract anti forgery token from the view
+        /// <summary>
+        /// Extract anti forgery token from response
+        /// </summary>
+        /// <param name="htmlResponseText"></param>
+        /// <returns></returns>
         public static string ExtractAntiForgeryToken(string htmlResponseText)
         {
             if (htmlResponseText == null) throw new ArgumentNullException("htmlResponseText");
@@ -129,6 +111,11 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests.Helpers
             return match.Success ? match.Groups[1].Captures[0].Value : null;
         }
 
+        /// <summary>
+        /// Extract anti forgery token from response (async)
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
         public static async Task<string> ExtractAntiForgeryTokenAsync(HttpResponseMessage response)
         {
             string responseAsString = await response.Content.ReadAsStringAsync();

@@ -23,13 +23,13 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
         
 
         private readonly CustomWebApplicationFactory<P3AddNewFunctionalityDotNetCore.Startup> _factory;
-        //private readonly HttpClient _client;
+        private readonly HttpClient _client;
 
         public AdminModuleTests(CustomWebApplicationFactory<P3AddNewFunctionalityDotNetCore.Startup> factory)
         {
             _factory = factory;
-            //_client = factory.CreateClient();
-            ClientHelpers.Stage(factory.CreateClient());
+            _client = factory.CreateClient();
+            
         }
 
         // Verify the user can access the login page
@@ -40,7 +40,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             var url = "/Account/Login";
 
             // Act
-            var response = await ClientHelpers.GetAsync(url);
+            var response = await _client.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
             // Assert
@@ -49,13 +49,13 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
 
         // Verify the user can logout as administrator
         [Fact]
-        public async Task Get_CanLogoutAsAdmin_RedirectsToDefaultHomePage()
+        public async Task Get_CanLogout_RedirectsToHome()
         {
             // Arrange
             var url = "/Account/Logout";
 
             // Act
-            var response = await ClientHelpers.GetAsAuthAsync(url);
+            var response = await _client.GetAsAuthAsync(url);
             response.EnsureSuccessStatusCode();
 
             // Assert
@@ -70,7 +70,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
         public async Task Get_CannotAccessProtectedResource_RedirectsToAccountLogin(string url)
         {
             
-            var response = await ClientHelpers.GetAsync(url);
+            var response = await _client.GetAsync(url);
 
             response.EnsureSuccessStatusCode();
             Assert.Equal("/Account/Login", response.RequestMessage.RequestUri.AbsolutePath);
@@ -84,7 +84,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             var url = "/Product/ConfirmDelete?id=1";
 
             // Act
-            var response = await ClientHelpers.GetAsAuthAsync(url);
+            var response = await _client.GetAsAuthAsync(url);
             response.EnsureSuccessStatusCode();
 
             // Assert correct route
@@ -97,7 +97,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
 
         // Verify the user can login as administrator with the default username/password
         [Fact]
-        public async Task Post_CanLoginSuccessfullyAsAdmin_RedirectsToAdminPage()
+        public async Task Post_CanLoginSuccessfully_RedirectsToAdmin()
         {
             // Arrange 
             var client = _factory.CreateClient();
@@ -111,7 +111,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             };
 
             // Act
-            var response = await ClientHelpers.PostAntiForgeryAsync(client, url, formData);
+            var response = await _client.PostAntiForgeryAsync(url, formData);
             response.EnsureSuccessStatusCode();
 
             // Assert
@@ -128,7 +128,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             var url = "/Product/Admin";
             
             // Act
-            var response = await ClientHelpers.GetAsAuthAsync(url);
+            var response = await _client.GetAsAuthAsync(url);
             response.EnsureSuccessStatusCode();
 
             // Assert
@@ -145,7 +145,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
 
         // Verify the user can create a new product when logged in as admin
         [Fact]
-        public async Task Post_CreatesProductSuccessfully_RedirectsToAdminPage()
+        public async Task Post_ProductSavesSuccessfully_RedirectsToAdminPage()
         {
             // Arrange 
             var url = "/Product/Create";
@@ -159,7 +159,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             };
 
             // Act
-            var response = await ClientHelpers.PostWithAuthAsync(url, formData);
+            var response = await _client.PostWithAuthAsync(url, formData);
             response.EnsureSuccessStatusCode();
 
             // Assert
@@ -174,12 +174,10 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
 
         // Verify product creation fails when inputing invalid data, returns with validation errors
         [Fact]
-        public async Task Post_CreatesProductFailsWithValidationErrors()
+        public async Task Post_ProductFailsWithValidationErrors()
         {
             // Arrange 
-            
             var url = "/Product/Create";
-            
             var formData = new Dictionary<string, string>
             {
                 { "Name", "" },
@@ -190,7 +188,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             };
 
             // Act
-            var response = await ClientHelpers.PostWithAuthAsync(url, formData);
+            var response = await _client.PostWithAuthAsync(url, formData);
             response.EnsureSuccessStatusCode();
 
             // Assert
@@ -203,31 +201,31 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             
         }
 
-        // Verify admin can successfully delete a product
-        [Fact]
-        public async Task Post_DeleteProductSuccessfully_RedirectsToAdminPage()
-        {
-            // Arrange 
+        //// Verify admin can successfully delete a product
+        //[Fact]
+        //public async Task Post_DeleteProductSuccessfully_RedirectsToAdminPage()
+        //{
+        //    // Arrange 
             
-            var url = "/Product/Create";
+        //    var url = "/Product/Create";
             
-            var formData = new Dictionary<string, string>
-            {
-                { "Name", "Integration Test Product" },
-                { "Stock", "5" },
-                { "Price", "5.00" },
-                { "Description", "Integration test product" },
-                { "Details", "" }
-            };
+        //    var formData = new Dictionary<string, string>
+        //    {
+        //        { "Name", "Integration Test Product" },
+        //        { "Stock", "5" },
+        //        { "Price", "5.00" },
+        //        { "Description", "Integration test product" },
+        //        { "Details", "" }
+        //    };
 
-            // Act
-            var response = await ClientHelpers.PostWithAuthAsync(url, formData);
-            response.EnsureSuccessStatusCode();
+        //    // Act
+        //    var response = await ClientHelpers.PostWithAuthAsync(url, formData);
+        //    response.EnsureSuccessStatusCode();
 
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal("/Product/Admin", response.RequestMessage.RequestUri.AbsolutePath);
-        }
+        //    // Assert
+        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        //    Assert.Equal("/Product/Admin", response.RequestMessage.RequestUri.AbsolutePath);
+        //}
 
 
     }
