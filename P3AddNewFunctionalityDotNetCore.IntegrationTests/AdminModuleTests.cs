@@ -129,6 +129,35 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
 
         }
 
+        // Verify the admin page displays product information
+        [Fact]
+        public async Task Get_AdminPageShouldDisplayProductsFromDB()
+        {
+            // Arrange 
+            var client = _factory.CreateClient();
+            var url = "/Product/Admin";
+            var loginDetails = new Dictionary<string, string> { { "Name", "Admin" }, { "Password", "P@ssword123" } };
+
+
+            // Login as administrator
+            var loginResponse = await ClientHelpers.PostAntiForgeryAsync(client, "/Account/Login", loginDetails);
+            loginResponse.EnsureSuccessStatusCode();
+
+            // Act
+            var response = await client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("/Product/Admin", response.RequestMessage.RequestUri.AbsolutePath);
+            // Assert validation errors exist on page
+            var responseString = response.Content.ReadAsStringAsync();
+            
+            Assert.Contains("<td>NOKIA OEM BL-5J</td>", responseString.Result);
+            Assert.Contains("<td>VTech CS6114 DECT 6.0</td>", responseString.Result);
+
+        }
+
         // Verify the user can create a new product when logged in as admin
         [Fact]
         public async Task Post_CreatesProductSuccessfully_RedirectsToAdminPage()
@@ -158,6 +187,11 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("/Product/Admin", response.RequestMessage.RequestUri.AbsolutePath);
+
+            // Verify product is available
+            var responseString = response.Content.ReadAsStringAsync();
+
+            Assert.Contains("<td>Integration Test Product</td>", responseString.Result);
         }
 
         // Verify product creation fails when inputing invalid data, returns with validation errors

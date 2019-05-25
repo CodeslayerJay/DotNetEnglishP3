@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -46,12 +47,13 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
                     // Ensure the database is created.
                     db.Database.EnsureCreated();
 
+                    // Seed our db with test data
                     try
                     {
-                        var context = scopedServices.GetRequiredService<P3Referential>();
-                        context.Database.Migrate();
-                        var identityContext = scopedServices.GetRequiredService<AppIdentityDbContext>();
-                        identityContext.Database.Migrate();
+                        //var context = scopedServices.GetRequiredService<P3Referential>();
+                        //context.Database.Migrate();
+                        //var identityContext = scopedServices.GetRequiredService<AppIdentityDbContext>();
+                        //identityContext.Database.Migrate();
                         SeedData.Initialize(scopedServices);
                     }
                     catch (Exception ex)
