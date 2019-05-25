@@ -10,25 +10,26 @@ using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
 {
-    public class AdminModuleTests : IClassFixture<WebApplicationFactory<P3AddNewFunctionalityDotNetCore.Startup>>
+    public class AdminModuleTests : IClassFixture<CustomWebApplicationFactory<P3AddNewFunctionalityDotNetCore.Startup>>
     {
         // Integration Tests of the Admin Module using HttpClient
         // *Integration Testing deals with the application as a whole (external resources, etc) to make
         // sure those part(s) of the application work together. Unit tests are used for the logic of the
-        // individual pieces to determine they are working. (i.e specific controller tests)
+        // individual pieces to determine they are working, usually by mocking the services required. 
+        // (i.e specific controller tests, service tests, model tests, etc.)
 
         // Links and Resources used:
         // https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-2.2#customize-webapplicationfactory
-        // https://www.dotnetcurry.com/aspnet-core/1420/integration-testing-aspnet-core
+        
 
-        private readonly WebApplicationFactory<P3AddNewFunctionalityDotNetCore.Startup> _factory;
+        private readonly CustomWebApplicationFactory<P3AddNewFunctionalityDotNetCore.Startup> _factory;
 
-        public AdminModuleTests(WebApplicationFactory<P3AddNewFunctionalityDotNetCore.Startup> factory)
+        public AdminModuleTests(CustomWebApplicationFactory<P3AddNewFunctionalityDotNetCore.Startup> factory)
         {
             _factory = factory;
         }
 
-        // Test can get login page
+        // Verify the user can access the login page
         [Fact]
         public async Task Get_CanGetLoginPage()
         {
@@ -41,6 +42,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             Assert.Equal("/Account/Login", response.RequestMessage.RequestUri.AbsolutePath);
         }
 
+        // Verify the user can logout as administrator
         [Fact]
         public async Task Get_CanLogoutAsAdmin_RedirectsToDefaultHomePage()
         {
@@ -62,7 +64,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             Assert.Equal("/", response.RequestMessage.RequestUri.AbsolutePath);
         }
 
-        // Cannot access protected routes when not logged in as administrator
+        // Verify the user(s) cannot access protected routes when not logged in as administrator
         [Theory]
         [InlineData("/Product/Admin")]
         [InlineData("/Product/Create")]
@@ -77,9 +79,9 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             Assert.Equal("/Account/Login", response.RequestMessage.RequestUri.AbsolutePath);
         }
 
-        // Can get delete confirm page when logged in as administrator
+        // Verify the user can get delete confirm page when logged in as administrator
         [Fact]
-        public async Task Get_CanGetDeleteConfirmPage()
+        public async Task Get_CanGetDeleteConfirmPageAsAdmin()
         {
             // Arrange
             var client = _factory.CreateClient();
@@ -102,9 +104,9 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             Assert.Contains("<input type=\"hidden\" name=\"id\" value=\"1\" />", responseString.Result);
         }
 
-        // Can login successfully
+        // Verify the user can login as administrator with the default username/password
         [Fact]
-        public async Task Post_CanLoginSuccessfully_RedirectsToAdmin()
+        public async Task Post_CanLoginSuccessfullyAsAdmin_RedirectsToAdminPage()
         {
             // Arrange 
             var client = _factory.CreateClient();
@@ -127,7 +129,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
 
         }
 
-        // Test product creation (post)
+        // Verify the user can create a new product when logged in as admin
         [Fact]
         public async Task Post_CreatesProductSuccessfully_RedirectsToAdminPage()
         {
@@ -158,7 +160,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             Assert.Equal("/Product/Admin", response.RequestMessage.RequestUri.AbsolutePath);
         }
 
-        // Product creation fails with validation errors
+        // Verify product creation fails when inputing invalid data, returns with validation errors
         [Fact]
         public async Task Post_CreatesProductFailsWithValidationErrors()
         {
@@ -196,7 +198,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             //Assert.Contains("<li>Please enter a stock value</li>", responseString.Result);
         }
 
-        // Test product deletion (post)
+        // Verify admin can successfully delete a product
         [Fact]
         public async Task Post_DeleteProductSuccessfully_RedirectsToAdminPage()
         {
