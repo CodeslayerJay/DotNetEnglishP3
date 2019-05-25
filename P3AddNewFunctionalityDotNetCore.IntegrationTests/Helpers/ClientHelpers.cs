@@ -37,11 +37,11 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests.Helpers
         /// <param name="requestUri"></param>
         /// <param name="formData"></param>
         /// <returns></returns>
-        public static async Task<HttpResponseMessage> PostAntiForgeryAsync(this HttpClient httpClient, string requestUri, 
+        public static async Task<HttpResponseMessage> PostAntiForgeryAsync(this HttpClient httpClient, string formRequestUri, 
             IDictionary<string, string> formData)
         {
             // Get the form view
-            HttpResponseMessage responseMsg = await httpClient.GetAsync(requestUri);
+            HttpResponseMessage responseMsg = await httpClient.GetAsync(formRequestUri);
             if (!responseMsg.IsSuccessStatusCode)
             {
                 return responseMsg;
@@ -55,7 +55,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests.Helpers
 
             // Create the request message with previously serialized data + the Anti Forgery Token
             contentData.Add("__RequestVerificationToken", antiForgeryToken);
-            var requestMsg = new HttpRequestMessage(HttpMethod.Post, requestUri)
+            var requestMsg = new HttpRequestMessage(HttpMethod.Post, formRequestUri)
             {
                 Content = new FormUrlEncodedContent(contentData)
             };
@@ -66,7 +66,34 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests.Helpers
             return await httpClient.SendAsync(requestMsg);
         }
 
-        
+        public static async Task<HttpResponseMessage> PostAntiForgeryAsync(this HttpClient httpClient, 
+            string formRequestUri, string postRequestUri,
+            IDictionary<string, string> formData)
+        {
+            // Get the form view
+            HttpResponseMessage responseMsg = await httpClient.GetAsync(formRequestUri);
+            if (!responseMsg.IsSuccessStatusCode)
+            {
+                return responseMsg;
+            }
+
+            // Extract Anti Forgery Token
+            var antiForgeryToken = await ExtractAntiForgeryTokenAsync(responseMsg);
+
+            // Serialize data to Key/Value pairs
+            IDictionary<string, string> contentData = formData;
+
+            // Create the request message with previously serialized data + the Anti Forgery Token
+            contentData.Add("__RequestVerificationToken", antiForgeryToken);
+            var requestMsg = new HttpRequestMessage(HttpMethod.Post, postRequestUri)
+            {
+                Content = new FormUrlEncodedContent(contentData)
+            };
+            
+            return await httpClient.SendAsync(requestMsg);
+        }
+
+
         /// <summary>
         /// Make a post request as an authorized user
         /// </summary>
@@ -74,15 +101,32 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests.Helpers
         /// <param name="requestUri"></param>
         /// <param name="formData"></param>
         /// <returns></returns>
-        public static async Task<HttpResponseMessage> PostWithAuthAsync(this HttpClient httpClient, string requestUri,
+        public static async Task<HttpResponseMessage> PostWithAuthAsync(this HttpClient httpClient, string formRequestUri,
             IDictionary<string, string> formData)
         {
 
             await LoginAsAdmin(httpClient);
 
-            return await PostAntiForgeryAsync(httpClient, requestUri, formData);
+            return await PostAntiForgeryAsync(httpClient, formRequestUri, formData);
         }
 
+        /// <summary>
+        /// Make a post request as an authorized user
+        /// </summary>
+        /// <param name="httpClient"></param>
+        /// <param name="requestUri"></param>
+        /// <param name="postRequestUri"></param>
+        /// <param name="formData"></param>
+        /// <returns></returns>
+        public static async Task<HttpResponseMessage> PostWithAuthAsync(this HttpClient httpClient, 
+            string formRequestUri, string postRequestUri,
+            IDictionary<string, string> formData)
+        {
+
+            await LoginAsAdmin(httpClient);
+
+            return await PostAntiForgeryAsync(httpClient, formRequestUri, postRequestUri, formData);
+        }
 
         /// <summary>
         /// Get request as an authorized user

@@ -201,32 +201,27 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             
         }
 
-        //// Verify admin can successfully delete a product
-        //[Fact]
-        //public async Task Post_DeleteProductSuccessfully_RedirectsToAdminPage()
-        //{
-        //    // Arrange 
-            
-        //    var url = "/Product/Create";
-            
-        //    var formData = new Dictionary<string, string>
-        //    {
-        //        { "Name", "Integration Test Product" },
-        //        { "Stock", "5" },
-        //        { "Price", "5.00" },
-        //        { "Description", "Integration test product" },
-        //        { "Details", "" }
-        //    };
+        // Verify a product is successfully deleted
+        [Fact]
+        public async Task Post_DeleteProductSuccessfully_RedirectsToAdminPage()
+        {
+            // Arrange 
+            var url = "/Product/DeleteProduct";
 
-        //    // Act
-        //    var response = await ClientHelpers.PostWithAuthAsync(url, formData);
-        //    response.EnsureSuccessStatusCode();
+            // Using product from seed data with id 1
+            var formData = new Dictionary<string, string>
+            {
+                { "Id", "1" },
+                
+            };
 
-        //    // Assert
-        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        //    Assert.Equal("/Product/Admin", response.RequestMessage.RequestUri.AbsolutePath);
-        //}
+            // Act
+            var response = await _client.PostWithAuthAsync("/Product/ConfirmDelete?id=1",url, formData);
+            response.EnsureSuccessStatusCode();
 
-
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("/Product/Admin", response.RequestMessage.RequestUri.AbsolutePath);
+        }
     }
 }
