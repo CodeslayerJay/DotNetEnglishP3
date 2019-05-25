@@ -10,25 +10,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 {
     public class ProductServiceTests
     {
-        /// <summary>
-        /// Take this test method as a template to write your test method.
-        /// A test method must check if a definite method does its job:
-        /// returns an expected value from a particular set of parameters
-        /// </summary>
-        [Fact]
-        public void ExampleMethod()
-        {
-            // Arrange
-
-            // Act
-
-
-            // Assert
-            Assert.Equal(1, 1);
-        }
-
-        // TODO write test methods to ensure a correct coverage of all possibilities
-
+        
         // Get all products and ensure not empty
         [Fact]
         public void GetAllProducts()
@@ -46,7 +28,6 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Assert
             Assert.NotNull(products);
 
-            //Assert.IsType<IEnumerable<Product>>(products);
         }
 
 
@@ -94,10 +75,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Configure Localization
             var localizedStringMissingPrice = new LocalizedString("MissingPrice", "Please enter a price");
             localizer.Setup(x => x["MissingPrice"]).Returns(localizedStringMissingPrice);
-            var localizedStringNotANumber = new LocalizedString("PriceNotANumber", "The value entered for the price must be a number");
-            localizer.Setup(x => x["PriceNotANumber"]).Returns(localizedStringNotANumber);
-            var localizedStringNotGreaterThanZero = new LocalizedString("PriceNotGreaterThanZero", "The price must be greater than zero");
-            localizer.Setup(x => x["PriceNotGreaterThanZero"]).Returns(localizedStringNotGreaterThanZero);
+            
 
             var productService = new ProductService(cart.Object, pRepo.Object, oRepo.Object, localizer.Object);
 
@@ -194,11 +172,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Configure Localization
             var localizedStringMissingStock = new LocalizedString("MissingStock", "Please enter a stock value");
             localizer.Setup(x => x["MissingStock"]).Returns(localizedStringMissingStock);
-            var localizedStringNotAnInteger = new LocalizedString("StockNotAnInteger", "The value entered for the stock must be a number");
-            localizer.Setup(x => x["StockNotAnInteger"]).Returns(localizedStringNotAnInteger);
-            var localizedStringNotGreaterThanZero = new LocalizedString("StockNotGreaterThanZero", "The stock must greater than zero");
-            localizer.Setup(x => x["StockNotGreaterThanZero"]).Returns(localizedStringNotGreaterThanZero);
-
+            
 
             var productService = new ProductService(cart.Object, pRepo.Object, oRepo.Object, localizer.Object);
 

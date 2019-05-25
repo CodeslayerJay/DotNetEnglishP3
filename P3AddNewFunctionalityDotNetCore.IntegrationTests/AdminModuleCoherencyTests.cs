@@ -65,7 +65,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             // client view page
             var productData = new Dictionary<string, string>
             {
-                { "Id", "5" },
+                { "Id", "3" },
 
             };
             var clientResponse = await userClient.PostAsync("/Cart/AddToCart", new FormUrlEncodedContent(productData));
@@ -76,7 +76,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
 
             var formData = new Dictionary<string, string>
             {
-                { "Id", "5" },
+                { "Id", "3" },
 
             };
             var adminDeleteResponse = await adminClient.PostWithAuthAsync("/Product/ConfirmDelete?id=4", "/Product/DeleteProduct", formData);
@@ -87,8 +87,8 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
             clientReload.EnsureSuccessStatusCode();
             var newClientPageData = await clientReload.Content.ReadAsStringAsync();
 
-            Assert.Contains("NOKIA OEM BL-5J", originalClientPageData);
-            Assert.DoesNotContain("NOKIA OEM BL-5J", newClientPageData);
+            Assert.Contains("JVC HAFX8R Headphone", originalClientPageData);
+            Assert.DoesNotContain("JVC HAFX8R Headphone", newClientPageData);
         }
     }
 }
