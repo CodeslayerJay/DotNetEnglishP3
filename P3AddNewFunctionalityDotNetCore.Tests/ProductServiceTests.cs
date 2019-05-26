@@ -4,6 +4,7 @@ using P3AddNewFunctionalityDotNetCore.Models;
 using P3AddNewFunctionalityDotNetCore.Models.Repositories;
 using P3AddNewFunctionalityDotNetCore.Models.Services;
 using P3AddNewFunctionalityDotNetCore.Models.ViewModels;
+using System.Collections.Generic;
 using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
@@ -27,6 +28,25 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             // Assert
             Assert.NotNull(products);
+
+        }
+
+        [Fact]
+        public void GetAllProductsAsViewModel()
+        {
+            // Arrange
+            Mock<ICart> cart = new Mock<ICart>();
+            Mock<IProductRepository> pRepo = new Mock<IProductRepository>();
+            Mock<IOrderRepository> oRepo = new Mock<IOrderRepository>();
+            Mock<IStringLocalizer<ProductService>> localizer = new Mock<IStringLocalizer<ProductService>>();
+            var productService = new ProductService(cart.Object, pRepo.Object, oRepo.Object, localizer.Object);
+
+            // Act
+            var products = productService.GetAllProductsViewModel();
+
+            // Assert
+            Assert.NotNull(products);
+            Assert.IsType<List<ProductViewModel>>(products);
 
         }
 
