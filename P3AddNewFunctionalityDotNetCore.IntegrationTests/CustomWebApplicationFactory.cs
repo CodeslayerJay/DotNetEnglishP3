@@ -36,7 +36,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
                 var sp = services.BuildServiceProvider();
 
                 // Create a scope to obtain a reference to the database
-                // context (ApplicationDbContext).
+                // context (P3Referential).
                 using (var scope = sp.CreateScope())
                 {
                     var scopedServices = scope.ServiceProvider;
