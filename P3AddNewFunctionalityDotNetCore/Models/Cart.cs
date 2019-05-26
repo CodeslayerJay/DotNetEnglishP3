@@ -23,13 +23,17 @@ namespace P3AddNewFunctionalityDotNetCore.Models
             }
             else
             {
-                line.Quantity += quantity;
+                
+                if (product.Quantity > line.Quantity)
+                {
+                    line.Quantity += quantity;
+                }
             }
         }
 
         public void RemoveLine(Product product) => _cartLines.RemoveAll(l => l.Product.Id == product.Id);
 
-        // These do not count for if a line has a product with more
+        // These do not count if a line has a product with more
         // than 1 quantity to purchase
         // 
         //public double GetTotalValue()
