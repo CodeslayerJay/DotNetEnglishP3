@@ -12,45 +12,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
     public class ProductServiceTests
     {
         
-        // Get all products and ensure not empty
-        [Fact]
-        public void GetAllProducts()
-        {
-            // Arrange
-            Mock<ICart> cart = new Mock<ICart>();
-            Mock<IProductRepository> pRepo = new Mock<IProductRepository>();
-            Mock<IOrderRepository> oRepo = new Mock<IOrderRepository>();
-            Mock<IStringLocalizer<ProductService>> localizer = new Mock<IStringLocalizer<ProductService>>();
-            var productService = new ProductService(cart.Object, pRepo.Object, oRepo.Object, localizer.Object);
-
-            // Act
-            var products = productService.GetAllProducts();
-
-            // Assert
-            Assert.NotNull(products);
-
-        }
-
-        [Fact]
-        public void GetAllProductsAsViewModel()
-        {
-            // Arrange
-            Mock<ICart> cart = new Mock<ICart>();
-            Mock<IProductRepository> pRepo = new Mock<IProductRepository>();
-            Mock<IOrderRepository> oRepo = new Mock<IOrderRepository>();
-            Mock<IStringLocalizer<ProductService>> localizer = new Mock<IStringLocalizer<ProductService>>();
-            var productService = new ProductService(cart.Object, pRepo.Object, oRepo.Object, localizer.Object);
-
-            // Act
-            var products = productService.GetAllProductsViewModel();
-
-            // Assert
-            Assert.NotNull(products);
-            Assert.IsType<List<ProductViewModel>>(products);
-
-        }
-
-
+        
         // Test validation for missing product name
         [Fact]
         public void ValidateMissingName_CheckProductModelErrors()
