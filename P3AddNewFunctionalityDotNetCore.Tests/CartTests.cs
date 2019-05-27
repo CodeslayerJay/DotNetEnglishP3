@@ -19,8 +19,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void AddItemInCart()
         {
             Cart cart = new Cart();
-            var product1 = new Product { Id = 1 };
-            var product2 = new Product { Id = 1 };
+            Product product1 = new Product { Id = 1, Price = 10.99, Name = "Test Product 1", Quantity = 5 };
+            Product product2 = new Product { Id = 1, Price = 10.99, Name = "Test Product 1", Quantity = 5 };
 
             cart.AddItem(product1, 1);
             cart.AddItem(product2, 1);
