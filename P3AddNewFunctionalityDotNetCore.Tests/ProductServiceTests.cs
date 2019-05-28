@@ -9,25 +9,29 @@ using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
-    public class ProductServiceTests
+    public class ProductServiceTests : IClassFixture<TestFixture>
     {
-        
-        
+        private readonly TestFixture _fixture;
+        private readonly Mock<IStringLocalizer<ProductService>> localizer;
+
+        public ProductServiceTests(TestFixture fixture)
+        {
+            _fixture = fixture;
+            localizer = new Mock<IStringLocalizer<ProductService>>();
+        }
+
         // Test validation for missing product name
         [Fact]
         public void ValidateMissingName_CheckProductModelErrors()
         {
             // Arrange
-            Mock<ICart> cart = new Mock<ICart>();
-            Mock<IProductRepository> pRepo = new Mock<IProductRepository>();
-            Mock<IOrderRepository> oRepo = new Mock<IOrderRepository>();
-            Mock<IStringLocalizer<ProductService>> localizer = new Mock<IStringLocalizer<ProductService>>();
-
+            
             // Configure Localization
             var localizedString = new LocalizedString("MissingName", "Please enter your name");
             localizer.Setup(x => x["MissingName"]).Returns(localizedString);
 
-            var productService = new ProductService(cart.Object, pRepo.Object, oRepo.Object, localizer.Object);
+            var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object, 
+                _fixture.OrderRepo.Object, localizer.Object);
 
             //Act
             var product = new ProductViewModel
