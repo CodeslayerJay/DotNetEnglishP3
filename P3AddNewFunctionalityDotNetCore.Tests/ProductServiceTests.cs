@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Localization;
 using Moq;
 using P3AddNewFunctionalityDotNetCore.Models;
+using P3AddNewFunctionalityDotNetCore.Models.Entities;
 using P3AddNewFunctionalityDotNetCore.Models.Repositories;
 using P3AddNewFunctionalityDotNetCore.Models.Services;
 using P3AddNewFunctionalityDotNetCore.Models.ViewModels;
@@ -53,17 +54,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void ValidateMissingPrice_CheckProductModelErrors()
         {
             // Arrange
-            Mock<ICart> cart = new Mock<ICart>();
-            Mock<IProductRepository> pRepo = new Mock<IProductRepository>();
-            Mock<IOrderRepository> oRepo = new Mock<IOrderRepository>();
-            Mock<IStringLocalizer<ProductService>> localizer = new Mock<IStringLocalizer<ProductService>>();
-
+            
             // Configure Localization
             var localizedStringMissingPrice = new LocalizedString("MissingPrice", "Please enter a price");
             localizer.Setup(x => x["MissingPrice"]).Returns(localizedStringMissingPrice);
-            
 
-            var productService = new ProductService(cart.Object, pRepo.Object, oRepo.Object, localizer.Object);
+            var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
+                            _fixture.OrderRepo.Object, localizer.Object);
 
             //Act
             var product = new ProductViewModel
@@ -86,17 +83,12 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void ValidatePriceNotANumber_CheckProductModelErrors()
         {
             // Arrange
-            Mock<ICart> cart = new Mock<ICart>();
-            Mock<IProductRepository> pRepo = new Mock<IProductRepository>();
-            Mock<IOrderRepository> oRepo = new Mock<IOrderRepository>();
-            Mock<IStringLocalizer<ProductService>> localizer = new Mock<IStringLocalizer<ProductService>>();
-
-            // Configure Localization
+             // Configure Localization
             var localizedString = new LocalizedString("PriceNotANumber", "The value entered for the price must be a number");
             localizer.Setup(x => x["PriceNotANumber"]).Returns(localizedString);
 
-            var productService = new ProductService(cart.Object, pRepo.Object, oRepo.Object, localizer.Object);
-
+            var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
+                _fixture.OrderRepo.Object, localizer.Object);
             //Act
             var product = new ProductViewModel
             {
@@ -118,17 +110,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void ValidatePriceNotGreaterThanZero_CheckProductModelErrors()
         {
             // Arrange
-            Mock<ICart> cart = new Mock<ICart>();
-            Mock<IProductRepository> pRepo = new Mock<IProductRepository>();
-            Mock<IOrderRepository> oRepo = new Mock<IOrderRepository>();
-            Mock<IStringLocalizer<ProductService>> localizer = new Mock<IStringLocalizer<ProductService>>();
-
+            
             // Configure Localization
             var localizedString = new LocalizedString("PriceNotGreaterThanZero", "The price must be greater than zero");
             localizer.Setup(x => x["PriceNotGreaterThanZero"]).Returns(localizedString);
 
-            var productService = new ProductService(cart.Object, pRepo.Object, oRepo.Object, localizer.Object);
-
+            var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
+                 _fixture.OrderRepo.Object, localizer.Object);
             //Act
             var product = new ProductViewModel
             {
@@ -150,18 +138,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void ValidateStockMissingQuantity_CheckProductModelErrors()
         {
             // Arrange
-            Mock<ICart> cart = new Mock<ICart>();
-            Mock<IProductRepository> pRepo = new Mock<IProductRepository>();
-            Mock<IOrderRepository> oRepo = new Mock<IOrderRepository>();
-            Mock<IStringLocalizer<ProductService>> localizer = new Mock<IStringLocalizer<ProductService>>();
-
+           
             // Configure Localization
             var localizedStringMissingStock = new LocalizedString("MissingStock", "Please enter a stock value");
             localizer.Setup(x => x["MissingStock"]).Returns(localizedStringMissingStock);
-            
 
-            var productService = new ProductService(cart.Object, pRepo.Object, oRepo.Object, localizer.Object);
-
+            var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
+                _fixture.OrderRepo.Object, localizer.Object);
             //Act
             var product = new ProductViewModel
             {
@@ -183,17 +166,12 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void ValidateStockNotAnInteger_CheckProductModelErrors()
         {
             // Arrange
-            Mock<ICart> cart = new Mock<ICart>();
-            Mock<IProductRepository> pRepo = new Mock<IProductRepository>();
-            Mock<IOrderRepository> oRepo = new Mock<IOrderRepository>();
-            Mock<IStringLocalizer<ProductService>> localizer = new Mock<IStringLocalizer<ProductService>>();
-
+            
             // Configure Localization
             var localizedString = new LocalizedString("StockNotAnInteger", "The value entered for the stock must be a number");
             localizer.Setup(x => x["StockNotAnInteger"]).Returns(localizedString);
-
-            var productService = new ProductService(cart.Object, pRepo.Object, oRepo.Object, localizer.Object);
-
+            var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
+                            _fixture.OrderRepo.Object, localizer.Object);
             //Act
             var product = new ProductViewModel
             {
@@ -215,16 +193,11 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void ValidateStockNotGreaterThanZero_CheckProductModelErrors()
         {
             // Arrange
-            Mock<ICart> cart = new Mock<ICart>();
-            Mock<IProductRepository> pRepo = new Mock<IProductRepository>();
-            Mock<IOrderRepository> oRepo = new Mock<IOrderRepository>();
-            Mock<IStringLocalizer<ProductService>> localizer = new Mock<IStringLocalizer<ProductService>>();
-
-            // Configure Localization
+           // Configure Localization
             var localizedString = new LocalizedString("StockNotGreaterThanZero", "The stock must greater than zero");
             localizer.Setup(x => x["StockNotGreaterThanZero"]).Returns(localizedString);
-
-            var productService = new ProductService(cart.Object, pRepo.Object, oRepo.Object, localizer.Object);
+            var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
+                            _fixture.OrderRepo.Object, localizer.Object);
 
             //Act
             var product = new ProductViewModel
@@ -240,6 +213,77 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
 
             Assert.Contains("The stock must greater than zero", modelErrors);
+        }
+
+        [Fact]
+        public void CanGetAllProductsAsViewModel()
+        {
+            var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
+                _fixture.OrderRepo.Object, localizer.Object);
+
+            var products = productService.GetAllProductsViewModel();
+
+            Assert.NotEmpty(products);
+            Assert.IsType<List<ProductViewModel>>(products);
+        }
+
+        [Fact]
+        public void CanGetAllProducts()
+        {
+            var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
+                _fixture.OrderRepo.Object, localizer.Object);
+
+            var products = productService.GetAllProducts();
+
+            Assert.NotEmpty(products);
+            Assert.IsType<List<Product>>(products);
+        }
+
+        [Fact]
+        public void CanGetProductById()
+        {
+            var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
+                _fixture.OrderRepo.Object, localizer.Object);
+
+            var product = productService.GetProductById(1);
+
+            Assert.NotNull(product);
+            Assert.IsType<Product>(product);
+            Assert.Equal(1, product.Id);
+        }
+
+        [Fact]
+        public void CanGetProductByIdAsViewModel()
+        {
+            var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
+                _fixture.OrderRepo.Object, localizer.Object);
+
+            var product = productService.GetProductByIdViewModel(1);
+
+            Assert.NotNull(product);
+            Assert.IsType<ProductViewModel>(product);
+            Assert.Equal(1, product.Id);
+        }
+
+        [Fact]
+        public void CanSaveProductViewModelAsProduct()
+        {
+            var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
+                _fixture.OrderRepo.Object, localizer.Object);
+
+            ProductViewModel productViewModel = new ProductViewModel
+            {
+                Name = "New product", Description = "New Product from view model", Details = "",
+                Stock = "999", Price = "12.99"
+            };
+
+            productService.SaveProduct(productViewModel);
+
+            var product = productService.GetProductById(0);
+
+            Assert.NotNull(product);
+            Assert.Equal(0, product.Id);
+            
         }
     }
 }
