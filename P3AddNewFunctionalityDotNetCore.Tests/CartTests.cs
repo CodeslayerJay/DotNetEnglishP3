@@ -31,6 +31,21 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
+        public void RemoveItemInCart()
+        {
+            Cart cart = new Cart();
+            Product product1 = new Product { Id = 1, Price = 10.99, Name = "Test Product 1", Quantity = 5 };
+
+            cart.AddItem(product1, 3);
+
+            Assert.NotEmpty(cart.Lines);
+
+            cart.RemoveLine(product1);
+
+            Assert.Empty(cart.Lines);
+        }
+
+        [Fact]
         public void GetAverageValue()
         {
             Cart cart = new Cart();
