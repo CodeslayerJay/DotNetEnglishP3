@@ -43,8 +43,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
             
             ProductRepo.Setup(x => x.GetAllProducts()).Returns(products);
-            ProductRepo.Setup(x => x.GetProduct(It.IsAny<int>())).ReturnsAsync((int i) => products.Where(
-                p => p.Id == i).SingleOrDefault());
+            ProductRepo.Setup(x => x.GetProduct(It.IsAny<int>())).ReturnsAsync((int i) => products.SingleOrDefault(p => p.Id == i));
 
             ProductRepo.Setup(x => x.SaveProduct(It.IsAny<Product>())).Callback(
                 (Product product) =>
