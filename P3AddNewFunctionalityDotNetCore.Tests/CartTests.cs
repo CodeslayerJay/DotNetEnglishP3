@@ -16,7 +16,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
     public class CartTests
     {
         [Fact]
-        public void AddItemInCart()
+        public void Test_AddItemInCart()
         {
             Cart cart = new Cart();
             Product product1 = new Product { Id = 1, Price = 10.99, Name = "Test Product 1", Quantity = 5 };
@@ -31,7 +31,22 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void RemoveItemInCart()
+        public void Test_CannotAddItemIfMoreThanCurrentStock()
+        {
+            // Arrange
+            Cart cart = new Cart();
+            Product product = new Product {Id = 1, Price = 10.00, Name = "Test Product 1", Quantity = 5};
+
+            // Act
+            cart.AddItem(product, 10);
+
+            // Assert
+            Assert.Empty(cart.Lines);
+
+        }
+
+        [Fact]
+        public void Test_RemoveItemInCart()
         {
             Cart cart = new Cart();
             Product product1 = new Product { Id = 1, Price = 10.99, Name = "Test Product 1", Quantity = 5 };
@@ -46,7 +61,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void GetAverageValue()
+        public void Test_GetAverageValue()
         {
             Cart cart = new Cart();
             Product product1 = new Product { Id = 1, Price = 10.99, Name = "Test Product 1", Quantity = 5 };
@@ -62,7 +77,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void GetTotalValue()
+        public void Test_GetTotalValue()
         {
             Cart cart = new Cart();
             Product product1 = new Product { Id = 1, Price = 10.99, Name = "Test Product 1", Quantity = 5 };

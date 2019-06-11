@@ -16,10 +16,14 @@ namespace P3AddNewFunctionalityDotNetCore.Models
         public void AddItem(Product product, int quantity)
         {
             CartLine line = _cartLines.FirstOrDefault(p => p.Product.Id == product.Id);
-
+            
             if (line == null)
             {
-                _cartLines.Add(new CartLine { Product = product, Quantity = quantity });
+                if (product.Quantity > quantity)
+                {
+                    _cartLines.Add(new CartLine { Product = product, Quantity = quantity });
+                }
+                
             }
             else
             {
