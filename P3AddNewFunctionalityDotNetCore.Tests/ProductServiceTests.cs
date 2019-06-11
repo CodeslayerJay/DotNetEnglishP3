@@ -23,7 +23,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
         // Test validation for missing product name
         [Fact]
-        public void ValidateMissingName_CheckProductModelErrors()
+        public void Test_CheckProductModelErrors_ValidateMissingName()
         {
             // Arrange
             
@@ -51,7 +51,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
         // Test validation for missing price
         [Fact]
-        public void ValidateMissingPrice_CheckProductModelErrors()
+        public void Test_CheckProductModelErrors_ValidateMissingPrice()
         {
             // Arrange
             
@@ -80,7 +80,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
         // Test validation for price not a number
         [Fact]
-        public void ValidatePriceNotANumber_CheckProductModelErrors()
+        public void Test_CheckProductModelErrors_ValidatePriceNotANumber()
         {
             // Arrange
              // Configure Localization
@@ -107,7 +107,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
         // Test validation for price not greater than zero
         [Fact]
-        public void ValidatePriceNotGreaterThanZero_CheckProductModelErrors()
+        public void Test_CheckProductModelErrors_ValidatePriceNotGreaterThanZero()
         {
             // Arrange
             
@@ -135,7 +135,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
         // Test validation for stock missing quantity
         [Fact]
-        public void ValidateStockMissingQuantity_CheckProductModelErrors()
+        public void Test_CheckProductModelErrors_ValidateStockMissingQuantity()
         {
             // Arrange
            
@@ -163,7 +163,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
         // Test validation for stock not an integer
         [Fact]
-        public void ValidateStockNotAnInteger_CheckProductModelErrors()
+        public void Test_CheckProductModelErrors_ValidateStockNotAnInteger()
         {
             // Arrange
             
@@ -190,7 +190,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
         // Test validation for stock not greater than zero
         [Fact]
-        public void ValidateStockNotGreaterThanZero_CheckProductModelErrors()
+        public void Test_CheckProductModelErrors_ValidateStockNotGreaterThanZero()
         {
             // Arrange
            // Configure Localization
@@ -216,7 +216,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void CanGetAllProductsAsViewModel()
+        public void Test_CanGetAllProductsAsViewModel()
         {
             var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
                 _fixture.OrderRepo.Object, localizer.Object);
@@ -228,7 +228,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void CanGetAllProducts()
+        public void Test_CanGetAllProducts()
         {
             var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
                 _fixture.OrderRepo.Object, localizer.Object);
@@ -240,7 +240,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void CanGetProductById()
+        public void Test_CanGetProductById()
         {
             var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
                 _fixture.OrderRepo.Object, localizer.Object);
@@ -253,7 +253,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void CanGetProductByIdAsViewModel()
+        public void Test_CanGetProductByIdAsViewModel()
         {
             var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
                 _fixture.OrderRepo.Object, localizer.Object);
@@ -266,7 +266,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void CanSaveProductViewModelAsProduct()
+        public void Test_CanSaveProductViewModelAsProduct()
         {
             var productService = new ProductService(_fixture.Cart.Object, _fixture.ProductRepo.Object,
                 _fixture.OrderRepo.Object, localizer.Object);
