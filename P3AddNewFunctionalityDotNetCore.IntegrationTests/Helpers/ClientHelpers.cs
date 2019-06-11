@@ -19,7 +19,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests.Helpers
         private const string LoginRoute = "/Account/Login";
 
         // Login with test credentials
-        public static async Task<HttpResponseMessage> LoginAsAdmin(this HttpClient httpClient)
+        public static async Task<HttpResponseMessage> LoginAsAdminAsync(this HttpClient httpClient)
         {
             // Login as administrator
             var loginDetails = new Dictionary<string, string> { { "Name", AdminUser }, { "Password", AdminPassword } };
@@ -95,35 +95,24 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests.Helpers
 
 
         /// <summary>
-        /// Make a post request as an authorized user
+        /// Make a post request as an authorized user (async)
         /// </summary>
-        /// <param name="httpClient"></param>
-        /// <param name="requestUri"></param>
-        /// <param name="formData"></param>
-        /// <returns></returns>
         public static async Task<HttpResponseMessage> PostWithAuthAsync(this HttpClient httpClient, string formRequestUri,
             IDictionary<string, string> formData)
         {
 
-            await LoginAsAdmin(httpClient);
+            await LoginAsAdminAsync(httpClient);
 
             return await PostAntiForgeryAsync(httpClient, formRequestUri, formData);
         }
 
-        /// <summary>
-        /// Make a post request as an authorized user
-        /// </summary>
-        /// <param name="httpClient"></param>
-        /// <param name="requestUri"></param>
-        /// <param name="postRequestUri"></param>
-        /// <param name="formData"></param>
-        /// <returns></returns>
+        
         public static async Task<HttpResponseMessage> PostWithAuthAsync(this HttpClient httpClient, 
             string formRequestUri, string postRequestUri,
             IDictionary<string, string> formData)
         {
 
-            await LoginAsAdmin(httpClient);
+            await LoginAsAdminAsync(httpClient);
 
             return await PostAntiForgeryAsync(httpClient, formRequestUri, postRequestUri, formData);
         }
@@ -136,7 +125,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests.Helpers
         /// <returns></returns>
         public static async Task<HttpResponseMessage> GetAsAuthAsync(this HttpClient httpClient, string requestUri)
         {
-            await LoginAsAdmin(httpClient);
+            await LoginAsAdminAsync(httpClient);
 
             return await httpClient.GetAsync(requestUri);
         }
@@ -149,7 +138,7 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests.Helpers
         /// <returns></returns>
         public static string ExtractAntiForgeryToken(string htmlResponseText)
         {
-            if (htmlResponseText == null) throw new ArgumentNullException("htmlResponseText");
+            if (htmlResponseText == null) throw new ArgumentNullException(nameof(htmlResponseText));
 
             System.Text.RegularExpressions.Match match = Regex.Match(htmlResponseText, @"\<input name=""__RequestVerificationToken"" type=""hidden"" value=""([^""]+)"" \/\>");
             return match.Success ? match.Groups[1].Captures[0].Value : null;
