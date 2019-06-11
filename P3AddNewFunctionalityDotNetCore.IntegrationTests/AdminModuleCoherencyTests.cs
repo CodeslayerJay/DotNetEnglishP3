@@ -11,12 +11,10 @@ namespace P3AddNewFunctionalityDotNetCore.IntegrationTests
     public class AdminModuleCoherencyTests : IClassFixture<CustomWebApplicationFactory<P3AddNewFunctionalityDotNetCore.Startup>>
     {
         private readonly CustomWebApplicationFactory<Startup> _factory;
-        private readonly HttpClient _client;
-
+        
         public AdminModuleCoherencyTests(CustomWebApplicationFactory<P3AddNewFunctionalityDotNetCore.Startup> factory)
         {
             _factory = factory;
-            _client = factory.CreateClient();
         }
 
         // Coherency check for product deletion from admin / client on the home page
